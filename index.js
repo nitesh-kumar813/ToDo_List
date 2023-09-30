@@ -13,7 +13,16 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
 
-mongoose.connect("mongodb+srv://niteshkumaryadav813:Nitesh7521@cluster0.umtryfz.mongodb.net/todolistDB");
+const connectDB = async () => {
+  try {
+      console.log("Connection string:", process.env.MONGO_URI); // Debugging
+      await mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+      console.log("MongoDB Connected");
+  } catch (error) {
+      console.error("Error connecting to MongoDB:", error);
+      process.exit(1);
+  }
+};
 
 const itemschema = {
   name: String,
@@ -143,11 +152,12 @@ app.get("/:customListName", function(req, res) {
     });
 });
 
-
-
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
+connectDB().then(() => {
+  app.listen(port, () => {
+      console.log(`Server running on port ${port}`);
+  });
 });
+
 
 
 
